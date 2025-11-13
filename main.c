@@ -127,10 +127,12 @@ void remove_voo(GRAFO* g) {
     int origem, destino, existe = 0;
 
     // verifica se há pelo menos um voo
-    for(int i = 0; i < g->vertices; i++)
-        for(int j = 0; j < g->vertices; j++)
+    for(int i = 0; i < g->vertices; i++){
+        for(int j = 0; j < g->vertices; j++){
             if(g->matriz[i][j] == 1)
                 existe = 1;
+        }
+    }
 
     if(!existe) {
         printf("\nNão há voos cadastrados para remover!\n");
@@ -166,8 +168,8 @@ void mostra_matriz(GRAFO* g) {
         return;
     }
 
-    printf("\nMatriz de Adjacência (Voos entre aeroportos):\n\n");
-    printf("%15s", ""); // espaço inicial para alinhamento
+    printf("\nMatriz de voos entre aeroportos):\n\n");
+    printf("%11s", ""); // espaço inicial para alinhamento
 
     for(int i = 0; i < g->vertices; i++)
         printf("%10s", g->aeroportos[i]);
