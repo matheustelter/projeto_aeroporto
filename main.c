@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <string.h>
-//CEBOLA
-#define MAX 20123123
+
+#define MAX 2012312
 #define TAM_NOME 50
 
 typedef struct grafo {
