@@ -4,7 +4,7 @@
 #include <string.h>
 
 #define MAX 20
-#define TAM_NOME 50
+#define TAM_NOME 4
 
 typedef struct grafo {
     int vertices;
@@ -15,6 +15,7 @@ typedef struct grafo {
 // Protótipos
 void cria_grafo(GRAFO* g);
 void adiciona_aeroporto(GRAFO* g);
+void remover_aeroporto (GRAFO* g);
 void insere_voo(GRAFO* g);
 void remove_voo(GRAFO* g);
 void mostra_matriz(GRAFO* g);
@@ -34,10 +35,11 @@ int main() {
         printf("\n\tSISTEMA DE CONTROLE AÉREO");
         printf("\n--------------------------------------------");
         printf("\n1 - Adicionar aeroporto");
-        printf("\n2 - Inserir voo (ligação entre aeroportos)");
-        printf("\n3 - Remover voo");
-        printf("\n4 - Exibir matriz de voos");
-        printf("\n5 - Verificar se há voo entre dois aeroportos");
+        printf("\n2 - Remover aeroporto");
+        printf("\n3 - Inserir voo (ligação entre aeroportos)");
+        printf("\n4 - Remover voo");
+        printf("\n5 - Exibir matriz de voos");
+        printf("\n6 - Verificar se há voo entre dois aeroportos");
         printf("\n0 - Sair");
         printf("\n--------------------------------------------");
         printf("\nOpção: ");
@@ -49,15 +51,18 @@ int main() {
                 adiciona_aeroporto(&g);
                 break;
             case 2: 
+                remover_aeroporto(&g);
+                break; 
+            case 3: 
                 insere_voo(&g); 
                 break;
-            case 3: 
+            case 4: 
                 remove_voo(&g);
                 break;
-            case 4: 
+            case 5: 
                 mostra_matriz(&g); 
                 break;
-            case 5: 
+            case 6: 
                 verifica_conexao(&g); 
                 break;
             case 0: 
@@ -80,17 +85,104 @@ void cria_grafo(GRAFO* g) {
 }
 
 void adiciona_aeroporto(GRAFO* g) {
-    if(g->vertices >= MAX) {
-        printf("\nLimite máximo de %d aeroportos atingido!\n", MAX);
+    if (g->vertices >= MAX) {
+        printf("Limite máximo de aeroportos atingido!\n");
         return;
     }
 
-    printf("\nDigite o nome do aeroporto: ");
-    fgets(g->aeroportos[g->vertices], TAM_NOME, stdin);
-    g->aeroportos[g->vertices][strcspn(g->aeroportos[g->vertices], "\n")] = '\0'; // remover \n
+    char sigla[TAM_NOME];
 
+    while (1) {
+        printf("Digite a sigla do aeroporto: ");
+        scanf("%3s", sigla);
+
+        // Verificar repetição
+        int repetido = 0;
+        for (int i = 0; i < g->vertices; i++) {
+            if (strcmp(g->aeroportos[i], sigla) == 0) { //strcmp = verifica se a sigla ja existe e retorna 0 se sim
+                repetido = 1;
+                break;
+            }
+        }
+
+        if (repetido) { 
+            printf("Erro: esse aeroporto já foi cadastrado!\n");
+            continue;
+        }
+
+        break;
+    }
+
+    strcpy(g->aeroportos[g->vertices], sigla); //strcpy irá copiar a sigla para o próximo vértice (aeroporto)
     g->vertices++;
-    printf("\nAeroporto adicionado com sucesso!\n");
+
+    printf("Aeroporto %s adicionado com sucesso!\n", sigla);
+}
+
+void remover_aeroporto(GRAFO* g) {
+    if (g->vertices == 0) {
+        printf("\nNão há aeroportos para remover!\n");
+        return;
+    }
+
+    int indice;
+
+    printf("\nLista de aeroportos:\n");
+    for (int i = 0; i < g->vertices; i++)
+        printf("%d - %s\n", i, g->aeroportos[i]);
+
+    printf("\nDigite o número do aeroporto que deseja remover: ");
+    scanf("%d", &indice);
+
+    if (indice < 0 || indice >= g->vertices) {
+        printf("\nAeroporto inválido!\n");
+        return;
+    }
+
+    printf("\nVoos que serão removidos por causa da exclusão de %s:\n",
+           g->aeroportos[indice]);
+
+    int encontrou = 0;
+
+    //Voos que SAEM do aeroporto removido
+    for (int j = 0; j < g->vertices; j++) {
+        if (g->matriz[indice][j] == 1) {
+            printf(" - %s -> %s\n", g->aeroportos[indice], g->aeroportos[j]);
+            encontrou = 1;
+        }
+    }
+
+    //Voos que CHEGAM no aeroporto removido
+    for (int i = 0; i < g->vertices; i++) {
+        if (g->matriz[i][indice] == 1) {
+            printf(" - %s -> %s\n", g->aeroportos[i], g->aeroportos[indice]);
+            encontrou = 1;
+        }
+    }
+
+    if (!encontrou)
+        printf("Nenhum voo será perdido.\n");
+
+    //Remoção do aeroporto da lista
+    for (int i = indice; i < g->vertices - 1; i++) {
+        strcpy(g->aeroportos[i], g->aeroportos[i + 1]);
+    }
+
+    //Remoção da linha
+    for (int i = indice; i < g->vertices - 1; i++) {
+        for (int j = 0; j < g->vertices; j++)
+            g->matriz[i][j] = g->matriz[i + 1][j];
+    }
+
+    //Remoção da coluna
+    for (int j = indice; j < g->vertices - 1; j++) {
+        for (int i = 0; i < g->vertices; i++)
+            g->matriz[i][j] = g->matriz[i][j + 1];
+    }
+
+    g->vertices--;
+
+    printf("\nAeroporto removido com sucesso!\n");
 }
 
 void insere_voo(GRAFO* g) {
