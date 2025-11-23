@@ -5,6 +5,7 @@
 
 #define MAX 20
 #define TAM_NOME 4
+#define INFINITO 9999999 // variavel de numero padrão para valor de arestas
 
 typedef struct grafo {
     int vertices;
@@ -81,7 +82,7 @@ void cria_grafo(GRAFO* g) {
     g->vertices = 0;
     for(int i = 0; i < MAX; i++)
         for(int j = 0; j < MAX; j++)
-            g->matriz[i][j] = 0;
+            g->matriz[i][j] = INFINITO;
 }
 
 void adiciona_aeroporto(GRAFO* g) {
@@ -146,7 +147,7 @@ void remover_aeroporto(GRAFO* g) {
 
     //Voos que SAEM do aeroporto removido
     for (int j = 0; j < g->vertices; j++) {
-        if (g->matriz[indice][j] == 1) {
+        if (g->matriz[indice][j] != INFINITO) {
             printf(" - %s -> %s\n", g->aeroportos[indice], g->aeroportos[j]);
             encontrou = 1;
         }
@@ -154,7 +155,7 @@ void remover_aeroporto(GRAFO* g) {
 
     //Voos que CHEGAM no aeroporto removido
     for (int i = 0; i < g->vertices; i++) {
-        if (g->matriz[i][indice] == 1) {
+        if (g->matriz[i][indice] != INFINITO) {
             printf(" - %s -> %s\n", g->aeroportos[i], g->aeroportos[indice]);
             encontrou = 1;
         }
@@ -191,7 +192,7 @@ void insere_voo(GRAFO* g) {
         return;
     }
 
-    int origem, destino;
+    int origem, destino, distancia;
     printf("\nLista de aeroportos:\n");
     for(int i = 0; i < g->vertices; i++)
         printf("%d - %s\n", i, g->aeroportos[i]);
@@ -200,19 +201,26 @@ void insere_voo(GRAFO* g) {
     scanf("%d", &origem);
     printf("Digite o número do aeroporto de destino: ");
     scanf("%d", &destino);
+    printf("\nDigite a distância entre os aeroportos, em metros: ");
+    scanf("%d", &distancia);
 
     if(origem < 0 || destino < 0 || origem >= g->vertices || destino >= g->vertices) {
         printf("\nAeroporto inválido!\n");
         return;
     }
 
-    if(g->matriz[origem][destino] == 1) {
+    if(g->matriz[origem][destino] != INFINITO) {
         printf("\nJá existe um voo de %s para %s!\n", g->aeroportos[origem], g->aeroportos[destino]);
         return;
     }
 
-    g->matriz[origem][destino] = 1;
-    printf("\nVoo criado com sucesso de %s para %s!\n", g->aeroportos[origem], g->aeroportos[destino]);
+    if(distancia >= INFINITO) {
+        printf("\nDistância inválida!");
+        return;
+    }
+
+    g->matriz[origem][destino] = distancia;
+    printf("\nVoo criado com sucesso de %s para %s com distancia de %d!\n", g->aeroportos[origem], g->aeroportos[destino], g->matriz[origem][destino]);
 }
 
 void remove_voo(GRAFO* g) {
@@ -221,7 +229,7 @@ void remove_voo(GRAFO* g) {
     // verifica se há pelo menos um voo
     for(int i = 0; i < g->vertices; i++){
         for(int j = 0; j < g->vertices; j++){
-            if(g->matriz[i][j] == 1)
+            if(g->matriz[i][j] != INFINITO)
                 existe = 1;
         }
     }
@@ -245,12 +253,12 @@ void remove_voo(GRAFO* g) {
         return;
     }
 
-    if(g->matriz[origem][destino] == 0) {
+    if(g->matriz[origem][destino] == INFINITO) {
         printf("\nNão existe voo de %s para %s para remover!\n", g->aeroportos[origem], g->aeroportos[destino]);
         return;
     }
 
-    g->matriz[origem][destino] = 0;
+    g->matriz[origem][destino] = INFINITO;
     printf("\nVoo removido com sucesso!\n");
 }
 
@@ -270,7 +278,11 @@ void mostra_matriz(GRAFO* g) {
     for(int i = 0; i < g->vertices; i++) {
         printf("%10s", g->aeroportos[i]);
         for(int j = 0; j < g->vertices; j++)
-            printf("%10d", g->matriz[i][j]);
+            if(g->matriz[i][j] == INFINITO) {
+                printf("   Sem voo");
+            } else {
+                printf("%10d", g->matriz[i][j]);
+            }
         printf("\n");
     }
 }
@@ -291,7 +303,7 @@ void verifica_conexao(GRAFO* g) {
         return;
     }
 
-    if(g->matriz[origem][destino] == 1)
+    if(g->matriz[origem][destino] != INFINITO)
         printf("\nHá um voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
     else
         printf("\nNão há voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
