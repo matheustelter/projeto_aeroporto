@@ -22,6 +22,8 @@ void remove_voo(GRAFO* g);
 void mostra_matriz(GRAFO* g);
 void verifica_conexao(GRAFO* g);
 
+void criar_arquivo(GRAFO* g, int* versao);
+
 int main() {
 
         system("chcp 65001 > nul");
@@ -29,6 +31,8 @@ int main() {
 
     GRAFO g;
     int op;
+
+    int versao_arquivo = 1;
 
     cria_grafo(&g);
 
@@ -41,6 +45,7 @@ int main() {
         printf("\n4 - Remover voo");
         printf("\n5 - Exibir matriz de voos");
         printf("\n6 - Verificar se há voo entre dois aeroportos");
+        printf("\n7 - Criar arquivo GraphViz");
         printf("\n0 - Sair");
         printf("\n--------------------------------------------");
         printf("\nOpção: ");
@@ -65,6 +70,9 @@ int main() {
                 break;
             case 6: 
                 verifica_conexao(&g); 
+                break;
+            case 7:
+                criar_arquivo(&g, &versao_arquivo);
                 break;
             case 0: 
                 printf("\nSaindo...\n"); 
@@ -307,4 +315,75 @@ void verifica_conexao(GRAFO* g) {
         printf("\nHá um voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
     else
         printf("\nNão há voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
+}
+
+void criar_arquivo(GRAFO* g, int* versao) {
+    if(g->vertices == 0) {
+        printf("\nNenhum aeroporto cadastrado!\n");
+        return;
+    }
+
+    FILE *arquivo;
+
+    char nome_arquivo[20]; 
+
+    sprintf(nome_arquivo, "grafo-%d.txt", *versao);
+
+    arquivo = fopen(nome_arquivo, "w");
+
+
+    if(arquivo == NULL) {
+        printf("\nErro ao abrir o arquivo\n");
+        return;
+    } else {
+        printf("\nArquivo criado com sucesso\n");
+    }
+
+    fprintf(arquivo,
+    "digraph aeroportos {\n"
+    "  graph [\n"
+    "    layout = neato,\n"
+    "    model = \"mds\",\n"
+    "    splines = true,\n"
+    "    overlap = false,\n"
+    "    fontname = \"Arial\",\n"
+    "    fontsize = 12\n"
+    "  ];\n"
+    "  node [\n"
+    "    shape = square,\n"
+    "    style = filled,\n"
+    "    fillcolor = \"#58a6ff\",\n"
+    "    fontcolor = white,\n"
+    "    fontname = \"Arial\",\n"
+    "    fixedsize = true,\n"
+    "    width = 1.2\n"
+    "  ];\n"
+    "  edge [\n"
+    "    fontname = \"Arial\",\n"
+    "    fontsize = 20,\n"
+    "    color = \"#8b949e\",\n"
+    "    fontcolor = \"#c9d1d9\",\n"
+    "    penwidth = 10\n"
+    "  ];\n"
+    );
+
+    for(int i = 0; i < g->vertices; i++) {
+        fprintf(arquivo, "\n%d [label=\"%s\"];", i, g->aeroportos[i]);
+    }
+
+    fprintf(arquivo, "\n");
+
+    for(int i = 0; i < MAX; i++) {
+        for(int j = 0; j < MAX; j++) {
+            if(g->matriz[i][j] != INFINITO) {
+                fprintf(arquivo, "\n%d -> %d [label=\"%dkm\", len=\"%f\"]", i, j, g->matriz[i][j], g->matriz[i][j] / 1000.0);
+            }
+        }
+    }
+
+    fprintf(arquivo, "\n}");
+
+    fclose(arquivo);
+
+    (*versao)++;
 }
