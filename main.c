@@ -22,6 +22,7 @@ void remove_voo(GRAFO* g);
 void mostra_matriz(GRAFO* g);
 void verifica_conexao(GRAFO* g);
 void busca_largura(GRAFO* g);
+void criar_arquivo(GRAFO* g, int* versao);
 
 int main() {
 
@@ -31,10 +32,11 @@ int main() {
     GRAFO g;
     int op;
 
+    int versao_arquivo = 1;
+
     cria_grafo(&g);
 
     do {
-    
     printf("\033[94m"); //Código representa a cor azul
 
     printf(
