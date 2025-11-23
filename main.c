@@ -21,6 +21,7 @@ void insere_voo(GRAFO* g);
 void remove_voo(GRAFO* g);
 void mostra_matriz(GRAFO* g);
 void verifica_conexao(GRAFO* g);
+void busca_largura(GRAFO* g);
 
 int main() {
 
@@ -33,44 +34,80 @@ int main() {
     cria_grafo(&g);
 
     do {
-        printf("\n\tSISTEMA DE CONTROLE AÉREO");
-        printf("\n--------------------------------------------");
-        printf("\n1 - Adicionar aeroporto");
-        printf("\n2 - Remover aeroporto");
-        printf("\n3 - Inserir voo (ligação entre aeroportos)");
-        printf("\n4 - Remover voo");
-        printf("\n5 - Exibir matriz de voos");
-        printf("\n6 - Verificar se há voo entre dois aeroportos");
-        printf("\n0 - Sair");
-        printf("\n--------------------------------------------");
-        printf("\nOpção: ");
+    
+    printf("\033[94m"); //Código representa a cor azul
+
+    printf(
+    "  ===========================\n"
+    "  |      AEROPORTO UNISC     |\n"
+    "  ===========================\n"
+    "  \\        |       |        / " "            ________________________________________         :^\\            ______    .\n"
+    "  |        =========        |             |      ESTRUTURA DE DADOS E PROGRAMAÇÃO  |        |__`\\________-'__:__;\\___|\n"
+    "  |        |       |        |            |        PROJETO FINAL - 2 SEMESTRE      |________`\\_  UNISC                |)\n"
+    "  |        |       |        |           |         Instrument Airplane            |           `~~~~~~~~~---\\\\---\\|-'\n"
+    "  |        =========        |            `---------------------------------------'                        (o)  (o)  \n"
+    "   \\       |       |       /\n"
+    "    \\      |       |      /\n"
+    "      ===================\n"
+    "      ||               ||\n"
+    "      ||               ||       ___\n"
+    "      ||               ||        | \\_______________                 ╔═══════════════════════════╗\n"
+    "      ||   _           ||       ====( oooooooooo  O\\___             ║  TORRE DE CONTROLE AÉREO  ║\n"
+    "      ||  | |          ||        (________/=====>______)-           ╚═══════════════════════════╝\n"
+    "      ||  | |          ||                  OO        O\n"
+    "  =======================================================================================================================================\n"
+    );
+    
+    
+    
+    
+        printf("\033[0m"); //reseta a cor 
+   
+        printf("\033[1;32m");//Código define a cor verde 
+   
+        printf("\n1. Adicionar aeroporto");
+        printf("\n2. Remover aeroporto");
+        printf("\n3. Inserir voo (ligação entre aeroportos)");
+        printf("\n4. Remover voo");
+        printf("\n5. Exibir matriz de voos");
+        printf("\n6. Verificar se há voo entre dois aeroportos");
+        printf("\n7. Realizar busca em largura");
+        printf("\n0. Sair");
+        printf("\033[0m");  // reset cor
+
+        printf("\n\nEntrada >>  ");
         scanf("%d", &op);
+
         getchar(); // limpar buffer
 
         switch(op) {
-            case 1: 
+            case 1:
                 adiciona_aeroporto(&g);
                 break;
-            case 2: 
+            case 2:
                 remover_aeroporto(&g);
-                break; 
-            case 3: 
-                insere_voo(&g); 
                 break;
-            case 4: 
+            case 3:
+                insere_voo(&g);
+                break;
+            case 4:
                 remove_voo(&g);
                 break;
-            case 5: 
-                mostra_matriz(&g); 
+            case 5:
+                mostra_matriz(&g);
                 break;
-            case 6: 
-                verifica_conexao(&g); 
+            case 6:
+                verifica_conexao(&g);
                 break;
-            case 0: 
-                printf("\nSaindo...\n"); 
+            case 7:
+                busca_largura(&g);
+                break;
+            case 0:
+                printf("\033[1;36m\nSaindo...\n\033[0m");
                 break;
             default:
-                printf("\nOpção inválida!\n");
+                printf("\033[1;31m\nOpção inválida!\n\033[0m");
+
         }
 
     } while(op != 0);
@@ -106,7 +143,7 @@ void adiciona_aeroporto(GRAFO* g) {
             }
         }
 
-        if (repetido) { 
+        if (repetido) {
             printf("Erro: esse aeroporto já foi cadastrado!\n");
             continue;
         }
@@ -118,6 +155,8 @@ void adiciona_aeroporto(GRAFO* g) {
     g->vertices++;
 
     printf("Aeroporto %s adicionado com sucesso!\n", sigla);
+
+    getchar();
 }
 
 void remover_aeroporto(GRAFO* g) {
@@ -307,4 +346,67 @@ void verifica_conexao(GRAFO* g) {
         printf("\nHá um voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
     else
         printf("\nNão há voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
+}
+
+void busca_largura(GRAFO* g) {
+
+    //verificar se grafo esta vazio
+    if (g->vertices == 0) {
+        printf("\nNenhum aeroporto cadastrado!\n");
+        return;
+    }
+
+    //ponto de inicio
+    int inicio;
+
+
+    //listagem de opções de aeroportos
+    printf("\nLista de aeroportos:\n");
+    for (int i = 0; i < g->vertices; i++) {
+        printf("%d - %s\n", i, g->aeroportos[i]);
+    }
+
+    printf("\nDigite o número do aeroporto para iniciar a BFS: ");
+    scanf("%d", &inicio);
+
+    //condicoes de invalidez: ponto de inicio menor que 0 e inicio maior que a quantidade total de vertices
+    if (inicio < 0 || inicio >= g->vertices) {
+        printf("\nAeroporto inválido!\n");
+        return;
+    }
+
+    int visitado[MAX] = {0};
+    int fila[MAX];
+    int ini = 0;
+    int fim = 0;
+
+    fila[fim] = inicio;
+    fim += 1;
+
+    visitado[inicio] = 1;
+
+    printf("\nOrdem de visita (BFS) a partir de %s:\n", g->aeroportos[inicio]);
+
+    while (ini < fim) {
+
+        int atual = fila[ini];
+        ini += 1;
+
+        printf("%s ", g->aeroportos[atual]);
+
+        // Percorre todos os possíveis vizinhos
+        for (int i = 0; i < g->vertices; i++) {
+
+            // Se existe ligação e ainda não foi visitado
+            if (g->matriz[atual][i] != INFINITO && visitado[i] == 0) {
+
+                visitado[i] = 1;
+
+                fila[fim] = i;
+                fim += 1;
+            }
+        }
+    }
+
+    printf("\n");
 }
