@@ -376,7 +376,7 @@ void criar_arquivo(GRAFO* g, int* versao) {
     for(int i = 0; i < MAX; i++) {
         for(int j = 0; j < MAX; j++) {
             if(g->matriz[i][j] != INFINITO) {
-                fprintf(arquivo, "\n%d -> %d [label=\"%dkm\", len=\"%f\"]", i, j, g->matriz[i][j], g->matriz[i][j] / 1000.0);
+                fprintf(arquivo, "\n%d -> %d [label=\"%dkm\", len=\"%f\"];", i, j, g->matriz[i][j], g->matriz[i][j] / 1000.0);
             }
         }
     }
