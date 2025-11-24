@@ -1,3 +1,13 @@
+/*
+TEMA: Rede de Voos Diretos entre Aeroportos;
+TIPO GRAFO: Orientado;
+REPRESENTAÇÃO: Matriz de Adjacência;
+PERCURSO: BFS (Busca em Largura);
+FUNCIONALIDADES ADICIONAIS: Listar aeroportos, verificar se existe voo entre aeroportos, busca aeroportos inalcansáveis, verificar quantidade de voos, 
+consultar valor da passagem, verificar grau do aeroporto(emissão/recepção) e criar arquivo para representação no GraphViz;
+INTEGRANTES: Matheus Stelter, João Schuck e Samuel Guedes;
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
