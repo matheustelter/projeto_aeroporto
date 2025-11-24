@@ -82,6 +82,7 @@ int main() {
         printf("\n10. Consultar valor da passagem");
         printf("\n11. Verificar grau do aeroporto(Quantos voos chegam e quantos saem)");
         printf("\n12. Criar arquivo do gráfico");
+        printf("\n13. Carregar grafo de aeroportos pre pronto");
         printf("\n0. Sair");
         printf("\033[0m");  // reset cor
 
@@ -126,6 +127,9 @@ int main() {
                 break;
             case 12:
                 criar_arquivo(&g, &versao_arquivo);
+                break;
+            case 13:
+                carregar_grafo_pre_pronto(&g);
                 break;
             case 0:
                 printf("\033[1;36m\nSaindo...\n\033[0m");
@@ -673,4 +677,42 @@ void criar_arquivo(GRAFO* g, int* versao) {
     fclose(arquivo);
 
     (*versao)++;
+}
+
+void carregar_grafo_pre_pronto(GRAFO* g) {
+    printf("\nSubstituindo dados...\n");
+
+    g->vertices = 7;
+
+    char* aeroportos_prontos[MAX] = {
+        "GRU",
+        "GIG",  
+        "JFK",
+        "LAX",
+        "CDG",
+        "HND",
+        "DXB"
+    };
+
+    for(int i = 0; i < g->vertices; i++) {
+        strcpy(g->aeroportos[i], aeroportos_prontos[i]);
+    }
+    
+    for(int i = 0; i < MAX; i++) {
+        for(int j = 0; j < MAX; j++) {
+            g->matriz[i][j] = INFINITO; // Zera a matriz de arestas
+        }
+    }
+
+    g->matriz[0][1] = 400;    
+    g->matriz[1][0] = 420;   
+    g->matriz[2][3] = 3800;  
+    g->matriz[3][4] = 9100;  
+    g->matriz[4][5] = 9700;  
+    g->matriz[6][0] = 12000; 
+    g->matriz[5][6] = 7800;
+
+    g->total_voos = 7;
+
+    printf("\nDados pre prontos inseridos!\n");
 }
