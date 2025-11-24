@@ -8,10 +8,10 @@
 #define INFINITO 9999999 // variavel de numero padrão para valor de arestas
 
 typedef struct grafo {
-    int vertices;
-    char aeroportos[MAX][TAM_NOME];
-    int matriz[MAX][MAX];
-    int total_voos; //  contador de voos
+    int vertices; //inicia contador aeroportos 
+    char aeroportos[MAX][TAM_NOME]; //matriz que guarda sigla dos aeroportos
+    int matriz[MAX][MAX]; //matriz de adjacência do grafo
+    int total_voos; //contador de voos
 } GRAFO;
 
 // Protótipos
@@ -134,6 +134,7 @@ int main() {
 }
 
 void cria_grafo(GRAFO* g) {
+    //inicia estrutura com valor 0
     g->vertices = 0;
     g->total_voos = 0;
     for(int i = 0; i < MAX; i++)
@@ -151,7 +152,10 @@ void adiciona_aeroporto(GRAFO* g) {
 
     while (1) {
         printf("Digite a sigla do aeroporto: ");
-        scanf("%3s", sigla);
+        scanf("%3s", sigla); // %3s pega somente as 3 primeiras caracteres da sigla digitada
+
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF); //limpa o que foi digitado após as 3 primeiras caracteres
 
         // Verificar repetição
         int repetido = 0;
@@ -174,8 +178,6 @@ void adiciona_aeroporto(GRAFO* g) {
     g->vertices++;
 
     printf("Aeroporto %s adicionado com sucesso!\n", sigla);
-
-    getchar();
 }
 
 void remover_aeroporto(GRAFO* g) {
@@ -198,14 +200,14 @@ void remover_aeroporto(GRAFO* g) {
         return;
     }
 
-    printf("\nVoos que serão removidos por causa da exclusão de %s:\n",
+    printf("\nVoos que serão removidos por causa da exclusão de %s:\n", 
            g->aeroportos[indice]);
 
     int encontrou = 0;
 
     //Voos que SAEM do aeroporto removido
-    for (int j = 0; j < g->vertices; j++) {
-        if (g->matriz[indice][j] != INFINITO) {
+    for (int j = 0; j < g->vertices; j++) { //percorre a coluna 
+        if (g->matriz[indice][j] != INFINITO) { 
             printf(" - %s -> %s\n", g->aeroportos[indice], g->aeroportos[j]);
             encontrou = 1;
             g->total_voos--;
@@ -213,7 +215,7 @@ void remover_aeroporto(GRAFO* g) {
     }
 
     //Voos que CHEGAM no aeroporto removido
-    for (int i = 0; i < g->vertices; i++) {
+    for (int i = 0; i < g->vertices; i++) { //percorre a linha 
         if (g->matriz[i][indice] != INFINITO) {
             printf(" - %s -> %s\n", g->aeroportos[i], g->aeroportos[indice]);
             encontrou = 1;
@@ -262,21 +264,22 @@ void insere_voo(GRAFO* g) {
     printf("Digite o número do aeroporto de destino: ");
     scanf("%d", &destino);
 
-    if (origem == destino){
+    if (origem == destino){ // impede infomrar um voo laço (dele para ele mesmo)
         printf("\nNão é possível cadastra um voo de um aeroporto para ele mesmo!");
         return; 
     }
 
-    if(origem < 0 || destino < 0 || origem >= g->vertices || destino >= g->vertices) {
+    if(origem < 0 || destino < 0 || origem >= g->vertices || destino >= g->vertices) { 
         printf("\nAeroporto inválido!\n");
         return;
     }   
 
-    if(g->matriz[origem][destino] != INFINITO) {
+    if(g->matriz[origem][destino] != INFINITO) { // se espaço no array for diferente de infinito significa que já existe voo 
         printf("\nJá existe um voo de %s para %s!\n", g->aeroportos[origem], g->aeroportos[destino]);
         return;
     }
 
+    // após verificações pede a distância
     printf("\nDigite a distância entre os aeroportos, em KM: ");
     scanf("%d", &distancia);
 
@@ -285,7 +288,7 @@ void insere_voo(GRAFO* g) {
         return;
     }
 
-    g->matriz[origem][destino] = distancia;
+    g->matriz[origem][destino] = distancia; // onde era INFINITO recebe distância de acordo com aeroporto origem e destino
     g->total_voos++; 
     printf("\nVoo criado com sucesso de %s para %s com distância de %dKM!\n", g->aeroportos[origem], g->aeroportos[destino], g->matriz[origem][destino]);
 }
@@ -293,7 +296,7 @@ void insere_voo(GRAFO* g) {
 void remove_voo(GRAFO* g) {
     int origem, destino, existe = 0;
 
-    // verifica se há pelo menos um voo
+    //verifica se há pelo menos um voo
     for(int i = 0; i < g->vertices; i++){
         for(int j = 0; j < g->vertices; j++){
             if(g->matriz[i][j] != INFINITO)
@@ -320,12 +323,12 @@ void remove_voo(GRAFO* g) {
         return;
     }
 
-    if(g->matriz[origem][destino] == INFINITO) {
+    if(g->matriz[origem][destino] == INFINITO) { // se espaço no array for infinito significa que ñ existe voo para remover 
         printf("\nNão existe voo de %s para %s para remover!\n", g->aeroportos[origem], g->aeroportos[destino]);
         return;
     }
 
-    g->matriz[origem][destino] = INFINITO;
+    g->matriz[origem][destino] = INFINITO; // onde existia a distância passa a ser INFINITO (voo excluído)
     g->total_voos--; 
     printf("\nVoo removido com sucesso!\n");
 }
@@ -350,17 +353,18 @@ void mostra_matriz(GRAFO* g) {
     printf("\nMatriz de voos entre aeroportos):\n\n");
     printf("%11s", ""); // espaço inicial para alinhamento
 
-    for(int i = 0; i < g->vertices; i++)
+    // imprime as siglas como nome das colunas
+    for(int i = 0; i < g->vertices; i++) 
         printf("%10s", g->aeroportos[i]);
     printf("\n");
 
-    for(int i = 0; i < g->vertices; i++) {
-        printf("%10s", g->aeroportos[i]);
-        for(int j = 0; j < g->vertices; j++)
+    for(int i = 0; i < g->vertices; i++) { 
+        printf("%10s", g->aeroportos[i]); //imprime as sligas como nome da linha
+        for(int j = 0; j < g->vertices; j++) //percorre todas colunas da linha
             if(g->matriz[i][j] == INFINITO) {
-                printf("   Sem voo");
+                printf("   Sem voo");   //se espaço no array estiver como infinito irá informar que não existe voo entre os aeroportos
             } else {
-                printf("%10d", g->matriz[i][j]);
+                printf("%10d", g->matriz[i][j]); // caso contrário mostra a distância entre os aeroportos 
             }
         printf("\n");
     }
@@ -388,9 +392,9 @@ void verifica_conexao(GRAFO* g) {
         return;
     }
 
-    if(g->matriz[origem][destino] != INFINITO)
+    if(g->matriz[origem][destino] != INFINITO) // se no array estiver dif infinito (não foi cadastrado voo) irá imrpimir a conexão
         printf("\nHá um voo de %dKM do %s para o %s\n", g->matriz[origem][destino], g->aeroportos[origem], g->aeroportos[destino]);
-    else
+    else // caso contrário irá informar que não existe voo cadastrado
         printf("\nNão há voo do %s para o %s\n", g->aeroportos[origem], g->aeroportos[destino]);
 }
 
