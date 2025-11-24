@@ -11,6 +11,7 @@ typedef struct grafo {
     int vertices;
     char aeroportos[MAX][TAM_NOME];
     int matriz[MAX][MAX];
+    int total_voos; //  contador de voos
 } GRAFO;
 
 // Protótipos
@@ -22,6 +23,7 @@ void remove_voo(GRAFO* g);
 void mostra_matriz(GRAFO* g);
 void verifica_conexao(GRAFO* g);
 void busca_largura(GRAFO* g);
+void total_voos (GRAFO *g);
 void criar_arquivo(GRAFO* g, int* versao);
 
 int main() {
@@ -36,7 +38,6 @@ int main() {
 
     cria_grafo(&g);
 
-    do {
     printf("\033[94m"); //Código representa a cor azul
 
     printf(
@@ -59,21 +60,22 @@ int main() {
     "      ||  | |          ||                  OO        O\n"
     "  =======================================================================================================================================\n"
     );
-    
-    
-    
-    
+
+
+    do {
+
         printf("\033[0m"); //reseta a cor 
    
         printf("\033[1;32m");//Código define a cor verde 
    
         printf("\n1. Adicionar aeroporto");
         printf("\n2. Remover aeroporto");
-        printf("\n3. Inserir voo (ligação entre aeroportos)");
+        printf("\n3. Inserir voo");
         printf("\n4. Remover voo");
         printf("\n5. Exibir matriz de voos");
         printf("\n6. Verificar se há voo entre dois aeroportos");
         printf("\n7. Realizar busca em largura");
+        printf("\n8. Verficar quantidade de voos existentes");
         printf("\n0. Sair");
         printf("\033[0m");  // reset cor
 
@@ -104,6 +106,9 @@ int main() {
             case 7:
                 busca_largura(&g);
                 break;
+            case 8:
+                total_voos(&g);
+                break;
             case 0:
                 printf("\033[1;36m\nSaindo...\n\033[0m");
                 break;
@@ -119,6 +124,7 @@ int main() {
 
 void cria_grafo(GRAFO* g) {
     g->vertices = 0;
+    g->total_voos = 0;
     for(int i = 0; i < MAX; i++)
         for(int j = 0; j < MAX; j++)
             g->matriz[i][j] = INFINITO;
@@ -191,6 +197,7 @@ void remover_aeroporto(GRAFO* g) {
         if (g->matriz[indice][j] != INFINITO) {
             printf(" - %s -> %s\n", g->aeroportos[indice], g->aeroportos[j]);
             encontrou = 1;
+            g->total_voos--;
         }
     }
 
@@ -199,6 +206,7 @@ void remover_aeroporto(GRAFO* g) {
         if (g->matriz[i][indice] != INFINITO) {
             printf(" - %s -> %s\n", g->aeroportos[i], g->aeroportos[indice]);
             encontrou = 1;
+            g->total_voos--;
         }
     }
 
@@ -242,7 +250,7 @@ void insere_voo(GRAFO* g) {
     scanf("%d", &origem);
     printf("Digite o número do aeroporto de destino: ");
     scanf("%d", &destino);
-    printf("\nDigite a distância entre os aeroportos, em metros: ");
+    printf("\nDigite a distância entre os aeroportos, em KM: ");
     scanf("%d", &distancia);
 
     if(origem < 0 || destino < 0 || origem >= g->vertices || destino >= g->vertices) {
@@ -261,7 +269,8 @@ void insere_voo(GRAFO* g) {
     }
 
     g->matriz[origem][destino] = distancia;
-    printf("\nVoo criado com sucesso de %s para %s com distancia de %d!\n", g->aeroportos[origem], g->aeroportos[destino], g->matriz[origem][destino]);
+    g->total_voos++; 
+    printf("\nVoo criado com sucesso de %s para %s com distancia de %dKM!\n", g->aeroportos[origem], g->aeroportos[destino], g->matriz[origem][destino]);
 }
 
 void remove_voo(GRAFO* g) {
@@ -300,6 +309,7 @@ void remove_voo(GRAFO* g) {
     }
 
     g->matriz[origem][destino] = INFINITO;
+    g->total_voos--; 
     printf("\nVoo removido com sucesso!\n");
 }
 
@@ -329,7 +339,13 @@ void mostra_matriz(GRAFO* g) {
 }
 
 void verifica_conexao(GRAFO* g) {
+    if(g->vertices == 0) {
+        printf("\nNenhum aeroporto cadastrado!\n");
+        return;
+    }
+    
     int origem, destino;
+
     printf("\nLista de aeroportos:\n");
     for(int i = 0; i < g->vertices; i++)
         printf("%d - %s\n", i, g->aeroportos[i]);
@@ -345,9 +361,9 @@ void verifica_conexao(GRAFO* g) {
     }
 
     if(g->matriz[origem][destino] != INFINITO)
-        printf("\nHá um voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
+        printf("\nHá um voo de %dKM do %s para o %s\n", g->matriz[origem][destino], g->aeroportos[origem], g->aeroportos[destino]);
     else
-        printf("\nNão há voo entre %s -> %s\n", g->aeroportos[origem], g->aeroportos[destino]);
+        printf("\nNão há voo do %s para o %s\n", g->aeroportos[origem], g->aeroportos[destino]);
 }
 
 void busca_largura(GRAFO* g) {
@@ -394,7 +410,7 @@ void busca_largura(GRAFO* g) {
         int atual = fila[ini];
         ini += 1;
 
-        printf("%s ", g->aeroportos[atual]);
+        printf("%s", g->aeroportos[atual]);
 
         // Percorre todos os possíveis vizinhos
         for (int i = 0; i < g->vertices; i++) {
@@ -411,4 +427,13 @@ void busca_largura(GRAFO* g) {
     }
 
     printf("\n");
+}
+
+void total_voos (GRAFO *g){
+    if (g->total_voos <=0)
+        printf("\nNão existem voos cadastrados no sistema!\n");
+    else if (g->total_voos == 1)
+        printf("\nExiste %d voo cadastrados no sistema!\n", g->total_voos);
+    else
+        printf("\nExiste %d voos cadastrados no sistema!\n", g->total_voos);
 }
