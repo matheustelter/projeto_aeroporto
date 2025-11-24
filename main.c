@@ -28,6 +28,9 @@ void total_voos (GRAFO *g);
 void valor_passagem (GRAFO *g);
 void grau_aeroporto(GRAFO* g);
 void criar_arquivo(GRAFO* g, int* versao);
+void aeroportos_inancansaveis(GRAFO* g);
+void carregar_grafo_pre_pronto(GRAFO* g);
+
 
 int main() {
 
@@ -77,12 +80,14 @@ int main() {
         printf("\n5. Listar aeroportos");
         printf("\n6. Exibir matriz de voos");
         printf("\n7. Verificar se há voo entre dois aeroportos");
-        printf("\n8. Realizar busca em largura");
-        printf("\n9. Verficar quantidade de voos existentes");
-        printf("\n10. Consultar valor da passagem");
-        printf("\n11. Verificar grau do aeroporto(Quantos voos chegam e quantos saem)");
-        printf("\n12. Criar arquivo do gráfico");
+        printf("\n8. Buscar aeroportos inalcansaveis");
+        printf("\n9. Realizar busca em largura");
+        printf("\n10. Verficar quantidade de voos existentes");
+        printf("\n11. Consultar valor da passagem");
+        printf("\n12. Verificar grau do aeroporto(Quantos voos chegam e quantos saem)");
         printf("\n13. Carregar grafo de aeroportos pre pronto");
+        printf("\n14. Criar arquivo do gráfico");
+        
         printf("\n0. Sair");
         printf("\033[0m");  // reset cor
 
@@ -114,22 +119,25 @@ int main() {
                 verifica_conexao(&g);
                 break;
             case 8:
-                busca_largura(&g);
+                aeroportos_inancansaveis(&g);
                 break;
             case 9:
-                total_voos(&g);
+                busca_largura(&g);
                 break;
             case 10:
-                valor_passagem(&g);
+                total_voos(&g);
                 break;
             case 11:
-                grau_aeroporto(&g);
+                valor_passagem(&g);
                 break;
             case 12:
-                criar_arquivo(&g, &versao_arquivo);
+                grau_aeroporto(&g);
                 break;
-            case 13:
+            case 13: 
                 carregar_grafo_pre_pronto(&g);
+                break;
+            case 14:
+                criar_arquivo(&g, &versao_arquivo);
                 break;
             case 0:
                 printf("\033[1;36m\nSaindo...\n\033[0m");
@@ -493,7 +501,7 @@ void busca_largura(GRAFO* g) {
         int atual = fila[ini];
         ini += 1;
 
-        printf("%s", g->aeroportos[atual]);
+        printf("-%s", g->aeroportos[atual]);
 
         // Percorre todos os possíveis vizinhos
         for (int i = 0; i < g->vertices; i++) {
@@ -715,4 +723,84 @@ void carregar_grafo_pre_pronto(GRAFO* g) {
     g->total_voos = 7;
 
     printf("\nDados pre prontos inseridos!\n");
+}
+
+void aeroportos_inancansaveis(GRAFO* g) {
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Busca por aeroportos incalcansaveis\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
+    //verificar se grafo esta vazio
+    if (g->vertices == 0) {
+        printf("\nNenhum aeroporto cadastrado!\n");
+        return;
+    }
+
+    //ponto de inicio
+    int inicio;
+
+    //listagem de opções de aeroportos
+    printf("\nLista de aeroportos:\n");
+    for (int i = 0; i < g->vertices; i++) {
+        printf("%d - %s\n", i, g->aeroportos[i]);
+    }
+
+    printf("\nDigite o número do aeroporto: ");
+    scanf("%d", &inicio);
+
+    //condicoes de invalidez: ponto de inicio menor que 0 e inicio maior que a quantidade total de vertices
+    if (inicio < 0 || inicio >= g->vertices) {
+        printf("\nAeroporto inválido!\n");
+        return;
+    }
+
+    int visitado[MAX] = {0};
+    int fila[MAX];
+    int ini = 0;
+    int fim = 0;
+
+    fila[fim] = inicio;
+    fim += 1;
+
+    visitado[inicio] = 1;
+
+    while (ini < fim) {
+
+        int atual = fila[ini];
+        ini += 1;
+
+        // Percorre todos os possíveis vizinhos
+        for (int i = 0; i < g->vertices; i++) {
+
+            // Se existe ligação e ainda não foi visitado
+            if (g->matriz[atual][i] != INFINITO && visitado[i] == 0) {
+
+                visitado[i] = 1;
+
+                fila[fim] = i;
+                fim += 1;
+            }
+        }
+    }
+
+    printf("\nAeroportos inalcansaveis deste ponto:\n");
+
+    int foi_visitado;
+
+    for(int i = 0; i < g->vertices; i++) {
+        foi_visitado = 0;
+        
+        for(int j = 0; j < MAX; j++) {
+            if(visitado[j] == i) {
+                foi_visitado = 1;
+                break;
+            }
+        }
+
+        if(!foi_visitado) {
+            printf("-%s", g->aeroportos[i]);
+        }
+    }
+
+    printf("\n");
 }
