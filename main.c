@@ -739,24 +739,17 @@ void carregar_grafo_pre_pronto(GRAFO* g) {
 
 void aeroportos_inancansaveis(GRAFO* g) {
 
-    printf("\033[1;33m");//Código define a cor azul 
-    printf("\nOperação: Buscar Aeroportos Inalcansáveis\n"); //descrição da atividade
-    printf("\033[0m"); //reseta a cor
+    printf("\033[1;33m");
+    printf("\nOperação: Buscar Aeroportos Inalcansáveis\n");
+    printf("\033[0m");
 
-    printf("\033[1;33m");//Código define a cor azul 
-    printf("\nOperação: Busca por aeroportos incalcansáveis\n"); //descrição da atividade
-    printf("\033[0m"); //reseta a cor
-
-    //verificar se grafo esta vazio
     if (g->vertices == 0) {
         printf("\nNenhum aeroporto cadastrado!\n");
         return;
     }
 
-    //ponto de inicio
     int inicio;
 
-    //listagem de opções de aeroportos
     printf("\nLista de aeroportos:\n");
     for (int i = 0; i < g->vertices; i++) {
         printf("%d - %s\n", i, g->aeroportos[i]);
@@ -765,7 +758,6 @@ void aeroportos_inancansaveis(GRAFO* g) {
     printf("\nDigite o número do aeroporto: ");
     scanf("%d", &inicio);
 
-    //condicoes de invalidez: ponto de inicio menor que 0 e inicio maior que a quantidade total de vertices
     if (inicio < 0 || inicio >= g->vertices) {
         printf("\nAeroporto inválido!\n");
         return;
@@ -776,47 +768,35 @@ void aeroportos_inancansaveis(GRAFO* g) {
     int ini = 0;
     int fim = 0;
 
-    fila[fim] = inicio;
-    fim += 1;
-
+    fila[fim++] = inicio;
     visitado[inicio] = 1;
 
     while (ini < fim) {
 
-        int atual = fila[ini];
-        ini += 1;
+        int atual = fila[ini++];
 
-        // Percorre todos os possíveis vizinhos
         for (int i = 0; i < g->vertices; i++) {
 
-            // Se existe ligação e ainda não foi visitado
             if (g->matriz[atual][i] != INFINITO && visitado[i] == 0) {
-
                 visitado[i] = 1;
-
-                fila[fim] = i;
-                fim += 1;
+                fila[fim++] = i;
             }
         }
     }
 
     printf("\nAeroportos inalcansáveis deste ponto:\n");
 
-    int foi_visitado;
+    int achou = 0;
 
-    for(int i = 0; i < g->vertices; i++) {
-        foi_visitado = 0;
-        
-        for(int j = 0; j < MAX; j++) {
-            if(visitado[j] == i) {
-                foi_visitado = 1;
-                break;
-            }
+    for (int i = 0; i < g->vertices; i++) {
+        if (!visitado[i]) {
+            printf(" - %s\n", g->aeroportos[i]);
+            achou = 1;
         }
+    }
 
-        if(!foi_visitado) {
-            printf("-%s", g->aeroportos[i]);
-        }
+    if (!achou) {
+        printf("Todos os aeroportos são alcançáveis a partir deste ponto.\n");
     }
 
     printf("\n");
