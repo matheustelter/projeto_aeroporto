@@ -3,8 +3,8 @@
 #include <locale.h>
 #include <string.h>
 
-#define MAX 20
-#define TAM_NOME 4
+#define MAX 20 //possível cadastrar no máximo 20 aeroportos
+#define TAM_NOME 4 
 #define INFINITO 9999999 // variavel de numero padrão para valor de arestas
 
 typedef struct grafo {
@@ -25,6 +25,7 @@ void mostra_matriz(GRAFO* g);
 void verifica_conexao(GRAFO* g);
 void busca_largura(GRAFO* g);
 void total_voos (GRAFO *g);
+void valor_passagem (GRAFO *g);
 void grau_aeroporto(GRAFO* g);
 void criar_arquivo(GRAFO* g, int* versao);
 
@@ -63,7 +64,6 @@ int main() {
     "  =======================================================================================================================================\n"
     );
 
-
     do {
 
         printf("\033[0m"); //reseta a cor 
@@ -79,7 +79,8 @@ int main() {
         printf("\n7. Verificar se há voo entre dois aeroportos");
         printf("\n8. Realizar busca em largura");
         printf("\n9. Verficar quantidade de voos existentes");
-        printf("\n10. Verificar grau do aeroporto(Quantos voos chegam e quantos saem)");
+        printf("\n10. Consultar valor da passagem");
+        printf("\n11. Verificar grau do aeroporto(Quantos voos chegam e quantos saem)");
         printf("\n0. Sair");
         printf("\033[0m");  // reset cor
 
@@ -117,6 +118,9 @@ int main() {
                 total_voos(&g);
                 break;
             case 10:
+                valor_passagem(&g);
+                break;
+            case 11:
                 grau_aeroporto(&g);
                 break;
             case 0:
@@ -143,6 +147,11 @@ void cria_grafo(GRAFO* g) {
 }
 
 void adiciona_aeroporto(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Adicionar aeroporto\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     if (g->vertices >= MAX) {
         printf("Limite máximo de aeroportos atingido!\n");
         return;
@@ -181,6 +190,11 @@ void adiciona_aeroporto(GRAFO* g) {
 }
 
 void remover_aeroporto(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Remover aeroporto\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     if (g->vertices == 0) {
         printf("\nNão há aeroportos para remover!\n");
         return;
@@ -249,6 +263,11 @@ void remover_aeroporto(GRAFO* g) {
 }
 
 void insere_voo(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Inserir voo\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     if(g->vertices < 2) {
         printf("\nÉ necessário pelo menos 2 aeroportos cadastrados para criar um voo!\n");
         return;
@@ -294,6 +313,11 @@ void insere_voo(GRAFO* g) {
 }
 
 void remove_voo(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Remover voo\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     int origem, destino, existe = 0;
 
     //verifica se há pelo menos um voo
@@ -334,6 +358,11 @@ void remove_voo(GRAFO* g) {
 }
 
 void listar_aeroportos(GRAFO *g){
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Listar aeroportos\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     if (g->vertices == 0) {
         printf("\nNão há aeroportos para listar!\n");
         return;
@@ -345,6 +374,11 @@ void listar_aeroportos(GRAFO *g){
 }
 
 void mostra_matriz(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Exibir Matriz de Adjacência\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     if(g->vertices == 0) {
         printf("\nNenhum aeroporto cadastrado!\n");
         return;
@@ -371,6 +405,11 @@ void mostra_matriz(GRAFO* g) {
 }
 
 void verifica_conexao(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Verificar se existe voo entre dois aeroportos\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     if(g->vertices == 0) {
         printf("\nNenhum aeroporto cadastrado!\n");
         return;
@@ -399,6 +438,10 @@ void verifica_conexao(GRAFO* g) {
 }
 
 void busca_largura(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Busca em Largura\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
 
     //verificar se grafo esta vazio
     if (g->vertices == 0) {
@@ -462,6 +505,11 @@ void busca_largura(GRAFO* g) {
 }
 
 void total_voos (GRAFO *g){
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Verficar total de voos\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
     //A cada adição e remoção de voo o contador recebe + ou -, a função serve somente para mostrar
     if (g->total_voos <=0)
         printf("\nNão existem voos cadastrados no sistema!\n");
@@ -471,7 +519,46 @@ void total_voos (GRAFO *g){
         printf("\nExiste %d voos cadastrados no sistema!\n", g->total_voos);
 }
 
+void valor_passagem (GRAFO *g){
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Consultar valor da passagem\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
+
+    if (g->total_voos <=0){
+        printf("\nNenhum voo cadastrado!\n");
+        return; 
+    }
+
+    int origem, destino;
+
+    printf("\nLista de aeroportos:\n");
+        for(int i = 0; i < g->vertices; i++)
+            printf("%d - %s\n", i, g->aeroportos[i]);
+
+    printf("\nDigite o número do aeroporto de origem: ");
+    scanf("%d", &origem);
+    printf("Digite o número do aeroporto de destino: ");
+    scanf("%d", &destino);
+
+    if(origem < 0 || destino < 0 || origem >= g->vertices || destino >= g->vertices) {
+        printf("\nAeroporto inválido!\n");
+        return;
+    }
+
+    if(g->matriz[origem][destino] != INFINITO){
+        printf("\nValor da passagem de %s para %s:\n", g->aeroportos[origem], g->aeroportos[destino]);
+        printf("R$ %d,00\n", (g->matriz[origem][destino])*2);
+    }else{
+        printf("\nNão existe voo para %s -> %s!\n", g->aeroportos[origem], g->aeroportos[destino]);
+    }
+}
+
 void grau_aeroporto(GRAFO* g) {
+
+    printf("\033[1;33m");//Código define a cor azul 
+    printf("\nOperação: Verificar grau de emissão e recepção do aeroporto\n"); //descrição da atividade
+    printf("\033[0m"); //reseta a cor
 
     if (g->vertices == 0) {
         printf("\nNenhum aeroporto cadastrado!\n");
