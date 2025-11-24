@@ -262,6 +262,11 @@ void insere_voo(GRAFO* g) {
     printf("Digite o número do aeroporto de destino: ");
     scanf("%d", &destino);
 
+    if (origem == destino){
+        printf("\nNão é possível cadastra um voo de um aeroporto para ele mesmo!");
+        return; 
+    }
+
     if(origem < 0 || destino < 0 || origem >= g->vertices || destino >= g->vertices) {
         printf("\nAeroporto inválido!\n");
         return;
